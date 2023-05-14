@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-appdb}
+    ports:
+      - "5432:5432"
+    volumes:
+      - mbio_db:/var/lib/postgresql/data/
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    command: [ "sh", "-c", "chown -R postgres:postgres /docker-entrypoint-initdb.d/ && chmod -R 755 /docker-entrypoint-initdb.d/ && docker-entrypoint.sh postgres" ]
+    networks:
+      - my_network
+    restart: unless-stopped
+
+networks:
+  my_network:
+
+volumes:
+  mbio_db:
